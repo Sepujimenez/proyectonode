@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { EditProjectDialog } from "@/components/projects/edit-project-dialog";
 import { formatDistanceToNow } from "date-fns";
 import { es } from "date-fns/locale";
+import { Metadata } from "next";
 
 interface Project {
   id: string;
@@ -15,14 +16,17 @@ interface Project {
   created_at: string;
 }
 
-type Props = {
-  params: {
-    id: string;
-  };
-  searchParams: { [key: string]: string | string[] | undefined };
+interface PageProps {
+  params: { id: string };
+  searchParams?: { [key: string]: string | string[] | undefined };
+}
+
+export const metadata: Metadata = {
+  title: 'Detalles del Proyecto',
+  description: 'Ver y editar detalles del proyecto',
 };
 
-export default async function ProjectPage({ params, searchParams }: Props) {
+export default async function ProjectPage({ params }: PageProps) {
   const supabase = createServerComponentClient({ cookies });
   
   const { data: project } = await supabase
