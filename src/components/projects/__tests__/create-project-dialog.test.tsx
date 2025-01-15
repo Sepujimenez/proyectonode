@@ -1,7 +1,10 @@
 import '@testing-library/jest-dom';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { CreateProjectDialog } from '../create-project-dialog';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+
+const user = userEvent.setup();
 
 jest.mock('@supabase/auth-helpers-nextjs', () => ({
   createClientComponentClient: jest.fn(() => ({
@@ -24,7 +27,7 @@ describe('CreateProjectDialog', () => {
   it('abre el diálogo al hacer click en el botón', () => {
     render(<CreateProjectDialog onSuccess={mockOnSuccess} />);
     const button = screen.getByText('Nuevo Proyecto');
-    fireEvent.click(button);
+    user.click(button);
     expect(screen.getByText('Crear Nuevo Proyecto')).toBeInTheDocument();
     expect(screen.getByText(/Crea un nuevo proyecto/)).toBeInTheDocument();
   });
@@ -32,10 +35,10 @@ describe('CreateProjectDialog', () => {
   it('muestra error cuando el nombre está vacío', async () => {
     render(<CreateProjectDialog onSuccess={mockOnSuccess} />);
     const button = screen.getByText('Nuevo Proyecto');
-    fireEvent.click(button);
+    user.click(button);
     
     const submitButton = screen.getByText('Crear Proyecto');
-    fireEvent.click(submitButton);
+    user.click(submitButton);
     
     await waitFor(() => {
       expect(screen.getByText('El nombre es requerido')).toBeInTheDocument();
@@ -46,16 +49,16 @@ describe('CreateProjectDialog', () => {
   it('crea un proyecto exitosamente', async () => {
     render(<CreateProjectDialog onSuccess={mockOnSuccess} />);
     const button = screen.getByText('Nuevo Proyecto');
-    fireEvent.click(button);
+    user.click(button);
     
     const nameInput = screen.getByLabelText('Nombre del Proyecto');
     const descInput = screen.getByLabelText('Descripción');
     
-    fireEvent.change(nameInput, { target: { value: 'Mi Proyecto' } });
-    fireEvent.change(descInput, { target: { value: 'Descripción del proyecto' } });
+    user.type(nameInput, 'Mi Proyecto');
+    user.type(descInput, 'Descripción del proyecto');
     
     const submitButton = screen.getByText('Crear Proyecto');
-    fireEvent.click(submitButton);
+    user.click(submitButton);
     
     await waitFor(() => {
       expect(createClientComponentClient).toHaveBeenCalled();
@@ -80,13 +83,13 @@ describe('CreateProjectDialog', () => {
 
     render(<CreateProjectDialog onSuccess={mockOnSuccess} />);
     const button = screen.getByText('Nuevo Proyecto');
-    fireEvent.click(button);
+    user.click(button);
     
     const nameInput = screen.getByLabelText('Nombre del Proyecto');
-    fireEvent.change(nameInput, { target: { value: 'Mi Proyecto' } });
+    user.type(nameInput, 'Mi Proyecto');
     
     const submitButton = screen.getByText('Crear Proyecto');
-    fireEvent.click(submitButton);
+    user.click(submitButton);
     
     await waitFor(() => {
       expect(mockConsoleError).toHaveBeenCalledWith('No user authenticated');
