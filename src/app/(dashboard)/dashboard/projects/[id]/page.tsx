@@ -15,11 +15,14 @@ interface Project {
   created_at: string;
 }
 
-export default async function ProjectPage({ 
-  params 
-}: { 
-  params: { id: string } 
-}) {
+type Props = {
+  params: {
+    id: string;
+  };
+  searchParams: { [key: string]: string | string[] | undefined };
+};
+
+export default async function ProjectPage({ params, searchParams }: Props) {
   const supabase = createServerComponentClient({ cookies });
   
   const { data: project } = await supabase
