@@ -1,12 +1,11 @@
-"use client";
+"use server";
 
-import { useEffect, useState } from "react";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-import { Skeleton } from "@/components/ui/skeleton";
+import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
+import { cookies } from "next/headers";
 import { Badge } from "@/components/ui/badge";
+import { EditProjectDialog } from "@/components/projects/edit-project-dialog";
 import { formatDistanceToNow } from "date-fns";
 import { es } from "date-fns/locale";
-import { EditProjectDialog } from "@/components/projects/edit-project-dialog";
 
 interface Project {
   id: string;
@@ -16,42 +15,18 @@ interface Project {
   created_at: string;
 }
 
-export default function ProjectPage({ params }: { params: { id: string } }) {
-  const [project, setProject] = useState<Project | null>(null);
-  const [loading, setLoading] = useState(true);
-  const supabase = createClientComponentClient();
-
-  useEffect(() => {
-    async function loadProject() {
-      const { data, error } = await supabase
-        .from("projects")
-        .select("*")
-        .eq("id", params.id)
-        .single();
-
-      if (!error && data) {
-        setProject(data);
-      }
-      setLoading(false);
-    }
-
-    loadProject();
-  }, [params.id, supabase]);
-
-  if (loading) {
-    return (
-      <div className="space-y-6">
-        <div className="space-y-2">
-          <Skeleton className="h-8 w-[200px]" />
-          <Skeleton className="h-4 w-[300px]" />
-        </div>
-        <div className="space-y-4">
-          <Skeleton className="h-4 w-[100px]" />
-          <Skeleton className="h-20 w-full" />
-        </div>
-      </div>
-    );
-  }
+export default async function ProjectPage({ 
+  params 
+}: { 
+  params: { id: string } 
+}) {
+  const supabase = createServerComponentClient({ cookies });
+  
+  const { data: project } = await supabase
+    .from("projects")
+    .select("*")
+    .eq("id", params.id)
+    .single();
 
   if (!project) {
     return <div>Proyecto no encontrado</div>;
