@@ -51,7 +51,7 @@ export function SettingsForm() {
     try {
       await updateProfile(data);
       setError("");
-    } catch (error) {
+    } catch (_error) {
       setError("Error al actualizar el perfil");
     }
   }

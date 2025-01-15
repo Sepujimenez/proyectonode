@@ -70,7 +70,11 @@ export function CreateProjectDialog({ onSuccess }: CreateProjectDialogProps) {
 
       setOpen(false);
       form.reset();
-      onSuccess?.() || window.location.reload();
+      if (onSuccess) {
+        onSuccess();
+      } else {
+        window.location.reload();
+      }
     } catch (error) {
       console.error("Error creating project:", error);
     }

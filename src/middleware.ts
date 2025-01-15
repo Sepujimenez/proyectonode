@@ -6,10 +6,7 @@ export async function middleware(req: NextRequest) {
   const res = NextResponse.next();
   const supabase = createMiddlewareClient({ req, res });
 
-  const {
-    data: { session },
-    error,
-  } = await supabase.auth.getSession();
+  const { data: { session }, error: _error } = await supabase.auth.getSession();
 
   // Si no hay sesión y la ruta es del dashboard, redirigir a login
   if (!session && req.nextUrl.pathname.startsWith('/dashboard')) {
